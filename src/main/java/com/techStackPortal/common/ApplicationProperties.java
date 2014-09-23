@@ -3,8 +3,11 @@ package com.techStackPortal.common;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
+import org.apache.log4j.Logger;
+
 public class ApplicationProperties {
 	private static ResourceBundle rb;
+	private static final Logger LOGGER = Logger.getLogger(ApplicationProperties.class);
 	
 	static{
 		rb = ResourceBundle.getBundle("applicationProperties");
@@ -14,7 +17,7 @@ public class ApplicationProperties {
 		try {
 			return rb.getString(key);
 		} catch (MissingResourceException e) {
-			e.printStackTrace();
+			LOGGER.debug("Error initializing resource bundle",e);
 			return "";
 		}
 
@@ -25,7 +28,7 @@ public class ApplicationProperties {
 		try {
 			val = rb.getString(key);
 		} catch (MissingResourceException e) {
-			e.printStackTrace();
+			LOGGER.debug("Error initializing resource bundle",e);
 		}
 		if (val == null) {
 			val = defaultValue;

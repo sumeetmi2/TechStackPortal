@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 
 import org.apache.commons.io.FileDeleteStrategy;
+import org.apache.log4j.Logger;
 import org.neo4j.cypher.javacompat.ExecutionEngine;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Node;
@@ -19,7 +20,7 @@ public class GraphDB {
 	private static String DB_PATH = null;
 	private static GraphDatabaseService graphService = null;
 	private static ExecutionEngine executionEngine = null;
-	
+	private static final Logger LOGGER = Logger.getLogger(GraphDB.class);
 	
 	static{
 		DB_PATH = ApplicationProperties.getProperty("neo4j.db.location");
@@ -36,6 +37,7 @@ public class GraphDB {
 		}catch(Exception e){
 			File file = new File(DB_PATH+"/tm_tx_log.1");
 			file.delete();
+			LOGGER.debug("Error initializing graph",e);
 		}
 	}
 	
