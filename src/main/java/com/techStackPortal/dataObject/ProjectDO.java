@@ -5,7 +5,7 @@ import java.util.ArrayList;
 public class ProjectDO {
 	private String name;
 	private String id;
-	private ArrayList<String> technologies;
+	private ArrayList<String> technologies=null;
 	public String getName() {
 		return name;
 	}
@@ -19,6 +19,9 @@ public class ProjectDO {
 		this.id = id;
 	}
 	public ArrayList<String> getTechnologies() {
+		if(technologies == null){
+			technologies = new ArrayList<String>();
+		}
 		return technologies;
 	}
 	public void setTechnologies(ArrayList<String> technologies) {

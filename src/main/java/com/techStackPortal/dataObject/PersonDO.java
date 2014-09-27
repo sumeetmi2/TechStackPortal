@@ -5,7 +5,18 @@ import java.util.ArrayList;
 public class PersonDO {
 	private String id;
 	private String name;
-	private ArrayList<CompanyDO> companies;
+	private ArrayList<CompanyDO> companies=null;
+	private ArrayList<ProjectDO> projects = null;
+	
+	public ArrayList<ProjectDO> getProjects() {
+		if(projects==null){
+			projects = new ArrayList<ProjectDO>();
+		}
+		return projects;
+	}
+	public void setProjects(ArrayList<ProjectDO> projects) {
+		this.projects = projects;
+	}
 	public String getId() {
 		return id;
 	}
@@ -19,6 +30,9 @@ public class PersonDO {
 		this.name = name;
 	}
 	public ArrayList<CompanyDO> getCompanies() {
+		if(companies==null){
+			companies = new ArrayList<CompanyDO>();
+		}
 		return companies;
 	}
 	public void setCompanies(ArrayList<CompanyDO> companies) {

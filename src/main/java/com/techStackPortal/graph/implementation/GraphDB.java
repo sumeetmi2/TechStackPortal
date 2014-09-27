@@ -14,6 +14,7 @@ import org.neo4j.graphdb.factory.GraphDatabaseSettings;
 import org.neo4j.graphdb.index.ReadableIndex;
 
 import com.techStackPortal.common.ApplicationProperties;
+import com.techStackPortal.graph.labels.NodeLabels;
 
 public class GraphDB {
 
@@ -27,10 +28,8 @@ public class GraphDB {
 		try{ 
 			graphService = new GraphDatabaseFactory()
 					.newEmbeddedDatabaseBuilder(DB_PATH)
-					.setConfig(GraphDatabaseSettings.node_keys_indexable,"name")
-					.setConfig(GraphDatabaseSettings.relationship_keys_indexable,"name")
+					.setConfig(GraphDatabaseSettings.node_keys_indexable,"empCode,name")
 					.setConfig(GraphDatabaseSettings.node_auto_indexing, "true")
-					.setConfig(GraphDatabaseSettings.relationship_auto_indexing,"true")
 					.newGraphDatabase();
 			registerShutdownHook(graphService);
 			executionEngine= getEngine(graphService);
@@ -103,16 +102,9 @@ public class GraphDB {
 	 */
 	private static ExecutionEngine getEngine(GraphDatabaseService graphService) {
 		try (Transaction tx = graphService.beginTx()) {
-//			graphService.schema().constraintFor(NodeLabels.PERSON).assertPropertyIsUnique("personId");
-//			graphService.schema().constraintFor(NodeLabels.DEGREE).assertPropertyIsUnique("name");
-//			graphService.schema().constraintFor(NodeLabels.SPECIALIZATION).assertPropertyIsUnique("name");
-//			graphService.schema().constraintFor(NodeLabels.INSTITUTION).assertPropertyIsUnique("name");
-//			graphService.schema().constraintFor(NodeLabels.LOCATION).assertPropertyIsUnique("name");
-//			graphService.schema().constraintFor(NodeLabels.ROLE).assertPropertyIsUnique("name");
-//			graphService.schema().constraintFor(NodeLabels.EMPLOYER).assertPropertyIsUnique("name");
-//			graphService.schema().constraintFor(NodeLabels.MONTH).assertPropertyIsUnique("name");
-//			graphService.schema().constraintFor(NodeLabels.EVENT).assertPropertyIsUnique("name");
-//			graphService.schema().constraintFor(NodeLabels.YEAR).assertPropertyIsUnique("name");
+			graphService.schema().constraintFor(NodeLabels.EMPLOYEE).assertPropertyIsUnique("empCode");
+			graphService.schema().constraintFor(NodeLabels.PROJECT).assertPropertyIsUnique("name");
+			graphService.schema().constraintFor(NodeLabels.TECHNOLOGY).assertPropertyIsUnique("name");
 			tx.success();
 		}
 		return new ExecutionEngine(graphService);
