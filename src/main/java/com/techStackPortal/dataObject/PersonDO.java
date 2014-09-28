@@ -5,6 +5,20 @@ import java.util.ArrayList;
 public class PersonDO {
 	private String id;
 	private String name;
+	private String firstName;
+	private String lastName;
+	public String getFirstName() {
+		return firstName;
+	}
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
+	public String getLastName() {
+		return lastName;
+	}
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
+	}
 	private ArrayList<CompanyDO> companies=null;
 	private ArrayList<ProjectDO> projects = null;
 	
