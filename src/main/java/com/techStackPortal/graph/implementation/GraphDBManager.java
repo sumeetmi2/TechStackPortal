@@ -17,8 +17,14 @@ import org.neo4j.helpers.collection.IteratorUtil;
 import org.neo4j.tooling.GlobalGraphOperations;
 import org.springframework.stereotype.Component;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 import com.techStackPortal.dataObject.PersonDO;
 import com.techStackPortal.dataObject.ProjectDO;
+import com.techStackPortal.dataObject.QueryDO;
 import com.techStackPortal.graph.labels.NodeLabels;
 import com.techStackPortal.graph.labels.RelationshipLabels;
 
@@ -28,6 +34,10 @@ public class GraphDBManager {
 	static Logger LOGGER = Logger.getLogger(GraphDBManager.class);
 	private ExecutionResult executionResult;
 	
+	/**
+	 * @param person
+	 * @return 
+	 */
 	public boolean addPersonNodeInGraph(PersonDO person) {
 		GraphDatabaseService graphService = GraphDB.getGraphService();
 		ExecutionEngine engine = GraphDB.getExecutionEngine();
@@ -51,14 +61,25 @@ public class GraphDBManager {
 				}
 			}
 			tx.success();
+		}catch(Exception e){
+			return false;
 		}
-		return false;
+		return true;
 	}
+	
+	/**
+	 * @param engine
+	 * @param graphService
+	 * @param name
+	 * @param label
+	 * @return
+	 */
 	public Node createUniqueNode(ExecutionEngine engine,GraphDatabaseService graphService, String name, NodeLabels label) {
 		Node result = null;
 		if(name==null){
 			return null;
 		}else{
+			name = name.toLowerCase();
 			ResourceIterator<Node> resultIterator;
 			Map<String, Object> parameters = new HashMap<String, Object>();
 			String params = " {name: {name} ";
@@ -82,11 +103,20 @@ public class GraphDBManager {
 				tx.success();
 			} catch (CypherException e) {
 				LOGGER.error("Error while creating unique node : " + e);
+				throw e;
 			}
 		}
 		return result;
 	}
 	
+	/**
+	 * @param engine
+	 * @param graphService
+	 * @param startNode
+	 * @param endNode
+	 * @param rel
+	 * @return
+	 */
 	private Relationship createRelationshipBetween(ExecutionEngine engine,GraphDatabaseService graphService, Node startNode, Node endNode, RelationshipLabels rel){
 		Relationship result = null;
 		ExecutionResult executionResult;
@@ -105,9 +135,71 @@ public class GraphDBManager {
 					+ startNode.toString()
 					+ ", endNode : "
 					+ endNode.toString() + e);
+			throw e;
 		}
 
 		return result;
+	}
+	
+	/**
+	 * @param queryObj
+	 * @return list of person objects from search
+	 */
+	public QueryDO getSearchResult(QueryDO queryObj){
+		ExecutionResult executionResult;
+		QueryDO resultObj = null;
+		GraphDatabaseService graphService = GraphDB.getGraphService();
+		ExecutionEngine engine = GraphDB.getExecutionEngine();
+		String query = "MATCH (e:EMPLOYEE) -[:KNOWS]-> (t:TECHNOLOGY)<-[:HAS]-(p:PROJECT) "
+					+"WITH e,t,p "
+					+"MATCH (p)<-[:HAS_WORKED]-(e) "
+					+"{queryParam} "
+					+"WITH e,{name: p.name, technologies: collect(t.name)} as projs "
+					+"WITH {id: e.empCode,name: e.name,projects: collect(projs)} as person "
+					+"RETURN {result: collect(person)} as result";
+		String queryStr = "";
+		boolean flag = false;
+		if(queryObj != null){
+			queryStr += "WHERE ";
+			if(queryObj.getPersonName() != null){
+				queryStr += "e.name = \""+queryObj.getPersonName().toLowerCase()+"\" ";
+				flag =true;
+			}
+			
+			if(queryObj.getProjName() != null){
+				if(queryStr.contains("e.name")) {
+					queryStr +="AND ";
+				}
+				queryStr += "p.name = \""+queryObj.getProjName().toLowerCase()+"\" ";
+				flag =true;
+			}
+			
+			if(queryObj.getTechnologyName() != null){
+				if(queryStr.contains("e.name") || queryStr.contains("p.name")) {
+					queryStr +="AND ";
+				}
+				queryStr += "t.name = \""+queryObj.getTechnologyName().toLowerCase()+"\" ";
+				flag =true;
+			}
+		}
+		if(!flag){
+			queryStr = "";
+		}
+		query = query.replaceAll("\\{queryParam\\}", queryStr);
+		try(Transaction tx = graphService.beginTx()){
+			executionResult = engine.execute(query);
+			Gson g1 = new GsonBuilder().setPrettyPrinting().create();
+			String result = g1.toJson(IteratorUtil.asList(executionResult.iterator()));
+			JsonParser parser = new JsonParser();
+			JsonArray jArray = parser.parse(result).getAsJsonArray();
+			JsonElement elem = null;
+			if(jArray.size()>0){
+				elem = jArray.get(0).getAsJsonObject().get("result");
+			}	
+			resultObj = g1.fromJson(elem, QueryDO.class);
+			tx.success();
+		}
+		return resultObj;
 	}
 
 }

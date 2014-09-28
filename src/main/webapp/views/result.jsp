@@ -7,14 +7,17 @@
 <title>Insert title here</title>
 </head>
 <body>
-${name}<br/>
-${id} <br/>
-<c:forEach items="${projects}" var="proj">
+<c:forEach items = "${persons}" var="person">
+	<b>Name: </b>${person.name}<br/>
+	<b>Project: </b>
+	<c:forEach items="${person.projects}" var="proj">
 	${proj.name}<br/>
+	<b>Technologies: </b> 
 	<c:forEach items="${proj.technologies}" var = "tech">
-	 	${tech}<br/>
+	 	${tech}
 	</c:forEach>	
 </c:forEach>
-
+	<br/><br/>
+</c:forEach>
 </body>
 </html>

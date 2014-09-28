@@ -1,7 +1,7 @@
 <%@taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
 <html>
 <head>
-<title>Add Employee Info</title>
+<title>Tech Stack Portal</title>
 <script type="text/javascript">
 var fieldCount =0;
 	function addFields(){
