@@ -2,6 +2,7 @@ package com.techStackPortal.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -23,9 +24,14 @@ public class AddEmployeeController {
 	   }
 	 
 	 @RequestMapping(method = RequestMethod.POST)
-	 public String showAdded(@ModelAttribute("SpringWeb") PersonDO person){
+	 public String showAdded(@ModelAttribute("SpringWeb") PersonDO person,ModelMap map){
 		try{
-			graphDBManager.addPersonNodeInGraph(person);
+			boolean flag = graphDBManager.addPersonNodeInGraph(person);
+			if(!flag){
+				map.addAttribute("duplicateEmpCode","Employee code exists");
+				map.addAttribute("command",person);
+				return "inputInfo";
+			}
 		}catch(Exception e){
 			return "error";
 		}

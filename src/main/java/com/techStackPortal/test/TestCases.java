@@ -56,7 +56,7 @@ public class TestCases{
 	@Test
 	public void testNodeProps(){
 		System.out.println("testing");
-		 ReadableIndex<Node> nodeAutoIndex = graphService.index().getNodeAutoIndexer().getAutoIndex();;
+		 ReadableIndex<Node> nodeAutoIndex = graphService.index().getNodeAutoIndexer().getAutoIndex();
 		try(Transaction tx = graphService.beginTx()){
 //			assertFalse(nodeAutoIndex.get("name","Sumeet").hasNext());
 			assertEquals(n2,nodeAutoIndex.get("name","Harish").getSingle());

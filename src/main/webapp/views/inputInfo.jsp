@@ -10,7 +10,7 @@
 
 </head>
 <body class="blurBg-false" style="background-color:#EBEBEB">
-
+<b>${duplicateEmpCode}</b>
 <form:form class="formoid-solid-green" style="background-color:#FFFFFF;font-size:14px;font-family:'Roboto',Arial,Helvetica,sans-serif;color:#34495E;max-width:480px;min-width:150px" method="post">
 	<div class="title"><h2>Add Employee Info</h2></div>
 	<div class="element-name">
