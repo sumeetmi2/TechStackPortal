@@ -1485,3 +1485,17 @@ a{
 	background-color: #E4F5F8;
     text-decoration: none !important;
 }
+
+.goBackLink{
+	float: left;
+    margin-left: 25px;
+    margin-top: 13px;
+    text-decoration:underline;
+}
+
+
+.result-element-name {
+    padding-bottom: 0;
+    padding-left: 329px;
+    padding-top: 29px;
+}
