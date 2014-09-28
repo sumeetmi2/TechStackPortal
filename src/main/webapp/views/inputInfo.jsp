@@ -7,7 +7,13 @@
 
 <script type="text/javascript" src="<c:url value="/resources/js/jquery-1.8.0.min.js"/>"></script>
 <script type="text/javascript" src="<c:url value="/resources/js/formoid-solid-green.js"/>"></script>
-
+<script type="text/javascript">
+	window.onload = onload;
+	
+	$(document).ready(function(){
+	    $(".formoid-solid-green input[type='text']").val(""); 
+	});
+</script>
 </head>
 <body class="blurBg-false" style="background-color:#EBEBEB">
 <b>${duplicateEmpCode}</b>

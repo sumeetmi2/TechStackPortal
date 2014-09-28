@@ -20,7 +20,9 @@
 </div>
 
 <c:if test="${empty persons}">
-	<h1>No results found</h1>
+	<div class="result-element-name">
+	<h2>No results found</h2>
+	</div>
 </c:if>
 <c:forEach items = "${persons}" var="person">
 	<div class="result-element-name">
