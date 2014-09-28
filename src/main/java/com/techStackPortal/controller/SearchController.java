@@ -28,9 +28,13 @@ public class SearchController {
 	
 	@RequestMapping(method = RequestMethod.POST)
 	public String getSearchResult(@ModelAttribute("SpringWeb") QueryDO queryObj, ModelMap map){
-		 QueryDO resultObj = graphDBManager.getSearchResult(queryObj);
-		 ArrayList<PersonDO> persons = resultObj.getResult();
-		 map.addAttribute("persons",persons);
+		try{
+			QueryDO resultObj = graphDBManager.getSearchResult(queryObj);
+			 ArrayList<PersonDO> persons = resultObj.getResult();
+			 map.addAttribute("persons",persons);
+		}catch(Exception e){
+			return "error";
+		}
 		return "result";
 	}
 }

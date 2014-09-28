@@ -2,8 +2,6 @@ package com.techStackPortal.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -26,7 +24,11 @@ public class AddEmployeeController {
 	 
 	 @RequestMapping(method = RequestMethod.POST)
 	 public String showAdded(@ModelAttribute("SpringWeb") PersonDO person){
-		 graphDBManager.addPersonNodeInGraph(person);
+		try{
+			graphDBManager.addPersonNodeInGraph(person);
+		}catch(Exception e){
+			return "error";
+		}
 		 return "search";
 	 }
 }
