@@ -10,3 +10,14 @@ Tech Stack Portal will aim to address the need of 'who has worked on what techno
 4.	Dependency of getting information from more experienced in the company about who has worked on a particular technology will be greatly reduced.
 
 As a part of future plan, we can consider extending the graph model to incorporate all the sessions, papers, articles of an employee
+
+After deploying the application, you can use below urls
+
+For searching the graph:   
+
+<b>http://localhost:8080/TechStackPortal/search </b>
+
+
+For adding an Employee info:
+
+<b>http://localhost:8080/TechStackPortal/addEmployee</b>
