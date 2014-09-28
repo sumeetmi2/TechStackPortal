@@ -13,6 +13,8 @@ import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Relationship;
 import org.neo4j.graphdb.ResourceIterator;
 import org.neo4j.graphdb.Transaction;
+import org.neo4j.graphdb.index.IndexHits;
+import org.neo4j.graphdb.index.ReadableIndex;
 import org.neo4j.helpers.collection.IteratorUtil;
 import org.neo4j.tooling.GlobalGraphOperations;
 import org.springframework.stereotype.Component;
@@ -42,6 +44,16 @@ public class GraphDBManager {
 		GraphDatabaseService graphService = GraphDB.getGraphService();
 		ExecutionEngine engine = GraphDB.getExecutionEngine();
 		String nameParam = person.getName() +"|"+person.getId();
+		try(Transaction tx = graphService.beginTx()){
+			ReadableIndex<Node> nodeAutoIndex = graphService.index().getNodeAutoIndexer().getAutoIndex();
+			IndexHits<Node> r1= nodeAutoIndex.get("empCode",person.getId());
+			if(r1.hasNext()){
+				return false;
+			}
+			tx.success();
+		}catch(Exception e){
+			e.printStackTrace();
+		}
 		Node employeeNode = null;
 		Node projectNode = null;
 		Node technologyNode = null;
