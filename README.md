@@ -1,6 +1,9 @@
 TechStackPortal
 ===============
+
 Tech Stack Portal will aim to address the need of 'who has worked on what technology' in the company. The idea is to model a graph for every employee and his technology stack. The usefulness would be:
+
+
 1.	Search using the technology name or by an employee or by a project.
 2.	Different stats like how many projects use a particular technology or what are the rare technologies that arent much used in our company etc.
 3.	Exposure for a developer to showcase his unused skills by querying for a project with his desired skill
