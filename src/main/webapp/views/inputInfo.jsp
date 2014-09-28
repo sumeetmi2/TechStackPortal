@@ -24,23 +24,9 @@ var fieldCount =0;
 		cell3.innerHTML = "Technologies used";
 		
 		var cell4 = row1.insertCell(1);
-		cell4.innerHTML += '<input type="text" name="technologies'+fieldCount+'" id="technologies'+fieldCount+'"/>';
+		cell4.innerHTML += '<input type="text" name="projects['+fieldCount+'].techStr"/>';
 	}
 	
-	function onSubmit(){
-		for(var i=0;i<=fieldCount;i++){
-			var techstr = document.getElementById("technologies"+i).value;
-			var tech = techstr.split(",");
-			for(var j=0;j<tech.length;j++){
-				var ele1 = document.createElement("input");
-				ele1.setAttribute("type","hidden");
-				ele1.setAttribute("name","projects["+i+"].technologies["+j+"]");
-				ele1.setAttribute("value",tech[j]);	
-				document.getElementById("form0").appendChild(ele1);
-			}
-		}
-		document.forms[0].submit();
-	}
 </script>
 </head>
 <body>
@@ -64,13 +50,13 @@ var fieldCount =0;
 						</tr>
 						<tr>
 							<td>Technologies used</td>
-							<td><input type="text" id="technologies0"/></td>				
+							<td><input type="text" name="projects[0].techStr"/></td>				
 						</tr>
 					</table>
 				</td>
 			</tr>
 		</table>
-		<input type="button" onclick="onSubmit()" value="Submit"/>
+		<input type="submit"/>
 	</form:form>
 </body>
 </html>
