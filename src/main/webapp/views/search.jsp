@@ -14,24 +14,10 @@
 <form class="formoid-solid-green" style="background-color:#FFFFFF;font-size:14px;font-family:'Roboto',Arial,Helvetica,sans-serif;color:#34495E;max-width:480px;min-width:150px" action="./search" method="post">
 <div class="title"><h2>Search</h2></div>
 
-<div class="element-input" title="Technology">
-	<label class="title">Technology</label>
+<div class="element-input" title="Search for">
+	<label class="title">Search</label>
 	<div class="item-cont">
-		<input class="large" type="text" name="technologyName"/>
-		<span class="icon-place"></span>
-	</div>
-</div>
-<div class="element-input" title="Employee Name">
-	<label class="title">Name</label>
-	<div class="item-cont">
-		<input class="large" type="text" name="personName"/>
-		<span class="icon-place"></span>
-	</div>
-</div>
-<div class="element-input" title="Project">
-	<label class="title">Project</label>
-	<div class="item-cont">
-		<input class="large" type="text" name="projName"/>
+		<input class="large" type="text" name="search"/>
 		<span class="icon-place"></span>
 	</div>
 </div>

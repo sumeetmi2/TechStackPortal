@@ -7,15 +7,16 @@ import org.apache.commons.io.FileDeleteStrategy;
 import org.apache.log4j.Logger;
 import org.neo4j.cypher.javacompat.ExecutionEngine;
 import org.neo4j.graphdb.GraphDatabaseService;
-import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Transaction;
 import org.neo4j.graphdb.factory.GraphDatabaseFactory;
 import org.neo4j.graphdb.factory.GraphDatabaseSettings;
-import org.neo4j.graphdb.index.ReadableIndex;
 
 import com.techStackPortal.common.ApplicationProperties;
-import com.techStackPortal.graph.labels.NodeLabels;
 
+/**
+ * @author SumeetS
+ *
+ */
 public class GraphDB {
 
 	private static String DB_PATH = null;
@@ -102,9 +103,6 @@ public class GraphDB {
 	 */
 	private static ExecutionEngine getEngine(GraphDatabaseService graphService) {
 		try (Transaction tx = graphService.beginTx()) {
-			graphService.schema().constraintFor(NodeLabels.EMPLOYEE).assertPropertyIsUnique("empCode");
-			graphService.schema().constraintFor(NodeLabels.PROJECT).assertPropertyIsUnique("name");
-			graphService.schema().constraintFor(NodeLabels.TECHNOLOGY).assertPropertyIsUnique("name");
 			tx.success();
 		}
 		return new ExecutionEngine(graphService);

@@ -46,18 +46,18 @@
 		<!--a style="float:right;" lang="deleteDomainBoxes" href="javascript:;" class="deleteElement addCreative deleteCreativeTextArea creative_element_delete_link" style="margin-left: 10px;">Delete</a-->
 		
 		<fieldset>
-			<div class="element-input" title="Project Name">
+			<div class="element-input" title="Properties">
 				<label class="title">
 				</label>
 				<div class="item-cont">
-					<form:input path="projects[0].name" class="large" type="text" name="input1" required="required" placeholder="Project"/>
+					<form:input path="props[0].name" class="large" type="text" name="input1" required="required" placeholder="Property type"/>
 					<span class="icon-place"></span>
 				</div>
 			</div>
-			<div class="element-input" title="Technologies Used">
+			<div class="element-input" title="Values">
 				<label class="title"></label>
 				<div class="item-cont">
-					<form:input path="projects[0].techStr" class="large" type="text" name="input2" placeholder="Technology"/>
+					<form:input path="props[0].value" class="large" type="text" name="input2" placeholder="Property Value"/>
 					<span class="icon-place"></span>
 				</div>
 			</div>
@@ -66,32 +66,6 @@
 	</div>
 	<div class="submit"><input onclick="javascript:onsubmitemployee();" type="submit" value="Submit"/>
 	</div>	
-		<!-- 
-		<table>
-			<tr>
-				<td><form:label path="name">Name</form:label></td>
-				<td><form:input path="name" /></td>
-			</tr>
-			<tr>
-				<td><form:label path="id">Emp Code</form:label></td>
-				<td><form:input path="id" /></td>
-			</tr>
-			<tr>
-				<td>
-					<table style="border: thin;" id="projTable">
-						<tr>
-							<td><form:label path="projects[0].name">Project</form:label></td>
-							<td><form:input path="projects[0].name" /><input type="button" onclick="addFields()" value="Add"/></td>
-						</tr>
-						<tr>
-							<td>Technologies used</td>
-							<td><input type="text" id="technologies0"/></td>				
-						</tr>
-					</table>
-				</td>
-			</tr>
-		</table>
-		<input type="button" onclick="onSubmit()" value="Submit"/> -->
 </form:form>
 
 </body>

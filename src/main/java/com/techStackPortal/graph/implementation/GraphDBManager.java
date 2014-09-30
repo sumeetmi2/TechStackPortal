@@ -3,6 +3,7 @@ package com.techStackPortal.graph.implementation;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 import org.neo4j.cypher.CypherException;
@@ -25,11 +26,13 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.techStackPortal.dataObject.PersonDO;
-import com.techStackPortal.dataObject.ProjectDO;
-import com.techStackPortal.dataObject.QueryDO;
-import com.techStackPortal.graph.labels.NodeLabels;
-import com.techStackPortal.graph.labels.RelationshipLabels;
+import com.techStackPortal.dataObject.PropsDO;
+import com.techStackPortal.dataObject.ResultDO;
 
+/**
+ * @author SumeetS
+ *
+ */
 @Component
 public class GraphDBManager {
 
@@ -43,7 +46,7 @@ public class GraphDBManager {
 	public boolean addPersonNodeInGraph(PersonDO person) throws Exception{
 		GraphDatabaseService graphService = GraphDB.getGraphService();
 		ExecutionEngine engine = GraphDB.getExecutionEngine();
-		String nameParam = person.getName() +"|"+person.getId();
+		String nameParam = person.getFirstName()+" "+person.getLastName() +"|"+person.getId();
 		try(Transaction tx = graphService.beginTx()){
 			ReadableIndex<Node> nodeAutoIndex = graphService.index().getNodeAutoIndexer().getAutoIndex();
 			IndexHits<Node> r1= nodeAutoIndex.get("empCode",person.getId());
@@ -52,26 +55,23 @@ public class GraphDBManager {
 			}
 			tx.success();
 		}catch(Exception e){
-			e.printStackTrace();
+			LOGGER.error("Exception while creating nodes",e);
 		}
-		Node employeeNode = null;
-		Node projectNode = null;
-		Node technologyNode = null;
-		ArrayList<ProjectDO> projects = person.getProjects();
-		ArrayList<String> technologies = null;
+		Node n = null;
+		Node personNode = null;
+		Map<String,String> propsMap = new HashMap<String,String>();
+		ArrayList<PropsDO> props = person.getProps();
+		for(PropsDO prop : props){
+			propsMap.put(prop.getName(),prop.getValue());
+		}
 		try (Transaction tx = graphService.beginTx()) {
 			LOGGER.info("No of nodes : " + IteratorUtil.count(GlobalGraphOperations.at(graphService).getAllNodes()));
-			employeeNode = createUniqueNode(engine, graphService, nameParam, NodeLabels.EMPLOYEE);
-			for(ProjectDO proj : projects){
-				projectNode = createUniqueNode(engine, graphService,proj.getName(), NodeLabels.PROJECT);
-				createRelationshipBetween(engine, graphService, employeeNode, projectNode, RelationshipLabels.HAS_WORKED);
-				technologies = proj.getTechnologies();
-				for(String tech : technologies){
-					technologyNode = createUniqueNode(engine, graphService,tech, NodeLabels.TECHNOLOGY);
-					createRelationshipBetween(engine, graphService, projectNode,technologyNode,RelationshipLabels.HAS);
-					createRelationshipBetween(engine, graphService, employeeNode,technologyNode,RelationshipLabels.KNOWS);
-				}
+			personNode = createUniqueNode(engine, graphService,nameParam,"employee");
+			for(String key : propsMap.keySet()){
+				n = createUniqueNode(engine, graphService, propsMap.get(key), key);
+				createRelationshipBetween(engine, graphService, personNode, n, person.getId());
 			}
+			
 			tx.success();
 		}catch(Exception e){
 			LOGGER.error("Exception while creating nodes",e);
@@ -87,7 +87,7 @@ public class GraphDBManager {
 	 * @param label
 	 * @return
 	 */
-	private Node createUniqueNode(ExecutionEngine engine,GraphDatabaseService graphService, String name, NodeLabels label) {
+	private Node createUniqueNode(ExecutionEngine engine,GraphDatabaseService graphService, String name, String label) {
 		Node result = null;
 		if(name==null){
 			return null;
@@ -130,12 +130,12 @@ public class GraphDBManager {
 	 * @param rel
 	 * @return
 	 */
-	private Relationship createRelationshipBetween(ExecutionEngine engine,GraphDatabaseService graphService, Node startNode, Node endNode, RelationshipLabels rel){
+	private Relationship createRelationshipBetween(ExecutionEngine engine,GraphDatabaseService graphService, Node startNode, Node endNode,String rel){
 		Relationship result = null;
 		ExecutionResult executionResult;
 		try (Transaction tx = graphService.beginTx()) {
 			ResourceIterator<Relationship> resultIterator;
-			String queryString = "START n=node("+startNode.getId()+") , m=node("+endNode.getId()+") WITH n,m MERGE n-[r:"+rel+"]->m RETURN r";
+			String queryString = "START n=node("+startNode.getId()+") , m=node("+endNode.getId()+") WITH n,m MERGE n-[r:"+"t"+rel.trim()+""+"]->m RETURN r";
 			executionResult = engine.execute(queryString);
 			resultIterator = executionResult.columnAs("r");
 			if(resultIterator.hasNext()){
@@ -158,66 +158,56 @@ public class GraphDBManager {
 	 * @param queryObj
 	 * @return list of person objects from search
 	 */
-	public QueryDO getSearchResult(QueryDO queryObj) throws Exception{
-		QueryDO resultObj = null;
+	public ArrayList<ResultDO> getSearchResult(String search) throws Exception{
+		ResultDO tempObj = null;
+		ArrayList<ResultDO> resultObject = new ArrayList<ResultDO>();
 		try{
 			ExecutionResult executionResult;
 			GraphDatabaseService graphService = GraphDB.getGraphService();
 			ExecutionEngine engine = GraphDB.getExecutionEngine();
-			String query = "MATCH (e:EMPLOYEE) -[:KNOWS]-> (t:TECHNOLOGY)<-[:HAS]-(p:PROJECT) "
-						+"WITH e,t,p "
-						+"MATCH (p)<-[:HAS_WORKED]-(e) "
-						+"{queryParam} "
-						+"WITH e,{name: p.name, technologies: collect(t.name)} as projs "
-						+"WITH {id: e.empCode,name: e.name,projects: collect(projs)} as person "
-						+"RETURN {result: collect(person)} as result";
+			String query = "match (n)-[r]-() where n.name =~ \".*{searchParam}.*\" return distinct type(r)";
+			String query1 = "Match (n)-[x:{rel}]-(r) "
+					+"with distinct type(x) as x,{value: r.name, label: labels(r)} as l "
+					+"return {relType: x,result: collect(l)} as results";
 			String queryStr = "";
-			boolean flag = false;
-			if(queryObj != null){
-				queryStr += "WHERE ";
-				if(queryObj.getPersonName() != null){
-					queryStr += "e.name =~ \".*"+queryObj.getPersonName().toLowerCase()+".*\" ";
-					flag =true;
-				}
-				
-				if(queryObj.getProjName() != null){
-					if(queryStr.contains("e.name")) {
-						queryStr +="AND ";
-					}
-					queryStr += "p.name =~ \".*"+queryObj.getProjName().toLowerCase()+".*\" ";
-					flag =true;
-				}
-				
-				if(queryObj.getTechnologyName() != null){
-					if(queryStr.contains("e.name") || queryStr.contains("p.name")) {
-						queryStr +="AND ";
-					}
-					queryStr += "t.name =~ \".*"+queryObj.getTechnologyName().toLowerCase()+".*\" ";
-					flag =true;
-				}
+			String masterQuery = "";
+			if(search != null && search.trim().length()>0){
+				queryStr = search;
 			}
-			if(!flag){
-				queryStr = "";
-			}
-			query = query.replaceAll("\\{queryParam\\}", queryStr);
+			query = query.replaceAll("\\{searchParam\\}", queryStr);
 			try(Transaction tx = graphService.beginTx()){
 				executionResult = engine.execute(query);
-				Gson g1 = new GsonBuilder().setPrettyPrinting().create();
-				String result = g1.toJson(IteratorUtil.asList(executionResult.iterator()));
-				JsonParser parser = new JsonParser();
-				JsonArray jArray = parser.parse(result).getAsJsonArray();
-				JsonElement elem = null;
-				if(jArray.size()>0){
-					elem = jArray.get(0).getAsJsonObject().get("result");
-				}	
-				resultObj = g1.fromJson(elem, QueryDO.class);
+				for (Map<String, Object> row : executionResult) {
+			        for (Entry<String, Object> column : row.entrySet()) {
+			        	if(masterQuery.length()>0){
+			        		masterQuery += " UNION ";
+			        	}
+			        	String tmp = query1;
+			        	tmp = tmp.replaceAll("\\{rel\\}",column.getValue().toString());
+			        	masterQuery += tmp;
+			        }
+				}
+				if(masterQuery.length() > 0 ){
+					executionResult = engine.execute(masterQuery);
+					Gson g1 = new GsonBuilder().setPrettyPrinting().create();
+					String result = g1.toJson(IteratorUtil.asList(executionResult.iterator()));
+					JsonParser parser = new JsonParser();
+					JsonArray jArray = parser.parse(result).getAsJsonArray();
+					JsonElement elem = null;
+					int size = jArray.size();
+					for(int i =0;i<size;i++){
+						elem = jArray.get(i).getAsJsonObject().get("results");
+						tempObj = g1.fromJson(elem, ResultDO.class);
+						resultObject.add(tempObj);
+					}
+				}
 				tx.success();
 			}
 		}catch(Exception e){
 			LOGGER.error("Exception while querying",e);
 			throw e;
 		}
-		return resultObj;
+		return resultObject;
 	}
 
 }

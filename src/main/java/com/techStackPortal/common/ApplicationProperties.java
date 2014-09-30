@@ -5,6 +5,10 @@ import java.util.ResourceBundle;
 
 import org.apache.log4j.Logger;
 
+/**
+ * @author SumeetS
+ *
+ */
 public class ApplicationProperties {
 	private static ResourceBundle rb;
 	private static final Logger LOGGER = Logger

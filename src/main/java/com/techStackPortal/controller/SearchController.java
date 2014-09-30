@@ -10,10 +10,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.techStackPortal.dataObject.PersonDO;
 import com.techStackPortal.dataObject.QueryDO;
+import com.techStackPortal.dataObject.ResultDO;
 import com.techStackPortal.graph.implementation.GraphDBManager;
 
+/**
+ * @author SumeetS
+ *
+ */
 @Controller
 @RequestMapping("/search")
 public class SearchController {
@@ -29,9 +33,8 @@ public class SearchController {
 	@RequestMapping(method = RequestMethod.POST)
 	public String getSearchResult(@ModelAttribute("SpringWeb") QueryDO queryObj, ModelMap map){
 		try{
-			QueryDO resultObj = graphDBManager.getSearchResult(queryObj);
-			 ArrayList<PersonDO> persons = resultObj.getResult();
-			 map.addAttribute("persons",persons);
+			ArrayList<ResultDO> results =  graphDBManager.getSearchResult(queryObj.getSearch());
+			 map.addAttribute("results",results);
 		}catch(Exception e){
 			return "error";
 		}

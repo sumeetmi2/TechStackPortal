@@ -2,11 +2,27 @@ package com.techStackPortal.dataObject;
 
 import java.util.ArrayList;
 
+
+/**
+ * @author SumeetS
+ *
+ */
 public class PersonDO {
 	private String id;
 	private String name;
 	private String firstName;
 	private String lastName;
+	private ArrayList<PropsDO> props= null;
+	
+	public ArrayList<PropsDO> getProps() {
+		if(props == null){
+			props = new ArrayList<PropsDO>();
+		}
+		return props;
+	}
+	public void setProps(ArrayList<PropsDO> props) {
+		this.props = props;
+	}
 	public String getFirstName() {
 		return firstName;
 	}
@@ -19,18 +35,6 @@ public class PersonDO {
 	public void setLastName(String lastName) {
 		this.lastName = lastName;
 	}
-	private ArrayList<CompanyDO> companies=null;
-	private ArrayList<ProjectDO> projects = null;
-	
-	public ArrayList<ProjectDO> getProjects() {
-		if(projects==null){
-			projects = new ArrayList<ProjectDO>();
-		}
-		return projects;
-	}
-	public void setProjects(ArrayList<ProjectDO> projects) {
-		this.projects = projects;
-	}
 	public String getId() {
 		return id;
 	}
@@ -42,14 +46,5 @@ public class PersonDO {
 	}
 	public void setName(String name) {
 		this.name = name;
-	}
-	public ArrayList<CompanyDO> getCompanies() {
-		if(companies==null){
-			companies = new ArrayList<CompanyDO>();
-		}
-		return companies;
-	}
-	public void setCompanies(ArrayList<CompanyDO> companies) {
-		this.companies = companies;
 	}
 }

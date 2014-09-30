@@ -498,13 +498,13 @@ $(document).ready(function(){
 			html += '<div class="composite_field">';
 			html += '	<a style="float:right;" lang="deleteDomainBoxes" href="javascript:;" class="deleteElement addCreative deleteCreativeTextArea creative_element_delete_link" style="margin-left: 10px;">Delete</a>';	
 			html += '	<fieldset>';
-			html += '		<div class="element-input" title="Project Name">';
-			html += '			<label class="title"></label><div class="item-cont"><input class="large" type="text" name="projects['+blockDCount+'].name" required="required" placeholder="Project"/><span class="icon-place"></span></div>';
+			html += '		<div class="element-input" title="Properties">';
+			html += '			<label class="title"></label><div class="item-cont"><input class="large" type="text" name="props['+blockDCount+'].name" required="required" placeholder="Property type"/><span class="icon-place"></span></div>';
 			html += '		</div>';
-			html += '		<div class="element-input" title="Technologies Used">';
+			html += '		<div class="element-input" title="Values">';
 			html += '			<label class="title"></label>';
 			html += '			<div class="item-cont">';			
-			html += '				<input class="large" type="text" name="projects['+blockDCount+'].techStr" placeholder="Technology"/><span class="icon-place"></span>';
+			html += '				<input class="large" type="text" name="props['+blockDCount+'].value" placeholder="Property value"/><span class="icon-place"></span>';
 			html += '			</div>';
 			html += '		</div>';
 			html += '	</fieldset>';

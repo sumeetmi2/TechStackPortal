@@ -19,24 +19,20 @@
 	<div class="title"><h2>Following results match your search criteria:</h2></div>
 </div>
 
-<c:if test="${empty persons}">
+<c:if test="${empty results}">
 	<div class="result-element-name">
 	<h2>No results found</h2>
 	</div>
 </c:if>
-<c:forEach items = "${persons}" var="person">
+<c:forEach items = "${results}" var="result">
 	<div class="result-element-name">
-		<b>Name: </b>${person.name}<br/>
-		<c:forEach items="${person.projects}" var="proj">
-		<b>Project: </b>
-		${proj.name}<br/>
-		<b>Technologies: </b> 
-		<c:forEach items="${proj.technologies}" var = "tech">
-	 	${tech}
+		<c:forEach items = "${result.result}" var="t1">
+			<c:forEach items="${t1.label}" var = "t2"> ${t2}</c:forEach>
+			:  ${t1.value}		<br/>
 		</c:forEach>
-		<br/>	
-		</c:forEach>
+
 	</div>
+	<br/>
 </c:forEach>
 
 </body>
