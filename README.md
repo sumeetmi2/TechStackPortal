@@ -21,3 +21,6 @@ For searching the graph:
 For adding an Employee info:
 
 <b>http://localhost:8080/TechStackPortal/addEmployee</b>
+
+
+Note: The attributes in the add info page are to be added dynamically. <b>Property Type</b> is the attribute type (eg. project,technology,experience) and <b>Property value</b> is the value corresponding to it.(eg.nitman,java,redshift,3)
