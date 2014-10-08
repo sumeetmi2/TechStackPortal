@@ -492,8 +492,8 @@ jQuery.validator.addMethod("pattern",function(b,a,c){return this.optional(a)||(n
 
 $(document).ready(function(){
 	var blockDCount = 0;
-	$("a[lang='addDomainBoxes']").bind('click',function(){
-            blockDCount++;
+	$("a[lang='addDomainBoxes']").unbind('click').bind('click',function(){
+            blockDCount = $(".composite_field fieldset").length;
             var html = "";
 			html += '<div class="composite_field">';
 			html += '	<a style="float:right;" lang="deleteDomainBoxes" href="javascript:;" class="deleteElement addCreative deleteCreativeTextArea creative_element_delete_link" style="margin-left: 10px;">Delete</a>';	
@@ -504,13 +504,13 @@ $(document).ready(function(){
 			html += '		<div class="element-input" title="Values">';
 			html += '			<label class="title"></label>';
 			html += '			<div class="item-cont">';			
-			html += '				<input class="large" type="text" name="props['+blockDCount+'].value" placeholder="Property value"/><span class="icon-place"></span>';
+			html += '				<input class="large" type="text" name="props['+ blockDCount++ +'].value" placeholder="Property value"/><span class="icon-place"></span>';
 			html += '			</div>';
 			html += '		</div>';
 			html += '	</fieldset>';
 			html += '</div>';
             
-			$("div.composite_field").after(html);
+			$("div.composite_field:last").after(html);
 			
             $("a[lang='deleteDomainBoxes']").unbind('click').bind('click',function(){
                 $(this).closest('div.composite_field').remove();

@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.ws.rs.core.MultivaluedHashMap;
+
 import org.apache.log4j.Logger;
 import org.neo4j.cypher.CypherException;
 import org.neo4j.cypher.javacompat.ExecutionEngine;
@@ -28,6 +30,7 @@ import com.google.gson.JsonParser;
 import com.techStackPortal.dataObject.PersonDO;
 import com.techStackPortal.dataObject.PropsDO;
 import com.techStackPortal.dataObject.ResultDO;
+
 
 /**
  * @author SumeetS
@@ -59,17 +62,22 @@ public class GraphDBManager {
 		}
 		Node n = null;
 		Node personNode = null;
-		Map<String,String> propsMap = new HashMap<String,String>();
+		MultivaluedHashMap<String,String> propsMap = new MultivaluedHashMap<String,String>();
 		ArrayList<PropsDO> props = person.getProps();
 		for(PropsDO prop : props){
-			propsMap.put(prop.getName(),prop.getValue());
+			String [] tmps = prop.getValue().split(",");
+			for(String tmp: tmps){
+				propsMap.add(prop.getName(),tmp);
+			}
 		}
 		try (Transaction tx = graphService.beginTx()) {
 			LOGGER.info("No of nodes : " + IteratorUtil.count(GlobalGraphOperations.at(graphService).getAllNodes()));
 			personNode = createUniqueNode(engine, graphService,nameParam,"employee");
 			for(String key : propsMap.keySet()){
-				n = createUniqueNode(engine, graphService, propsMap.get(key), key);
-				createRelationshipBetween(engine, graphService, personNode, n, person.getId());
+				for(String value : propsMap.get(key)){
+					n = createUniqueNode(engine, graphService,value, key);
+					createRelationshipBetween(engine, graphService, personNode, n, person.getId());
+				}
 			}
 			
 			tx.success();
@@ -210,4 +218,33 @@ public class GraphDBManager {
 		return resultObject;
 	}
 
+	/**
+	 * @param degree
+	 * @param query
+	 * @return
+	 */
+	public MultivaluedHashMap<String,String> getApiResult(String degree,String query) throws Exception{
+		MultivaluedHashMap<String,String> result = new MultivaluedHashMap<String,String>();
+		try{
+			ExecutionResult executionResult = null;
+			GraphDatabaseService graphService = GraphDB.getGraphService();
+			ExecutionEngine engine = GraphDB.getExecutionEngine();
+			Integer.parseInt(degree);
+			String qry = "match p=(n)-[r*1.."+degree+"]-(b) where n.name =~ \".*"+query+".*\" return distinct length(p) as PathLength, str(p) as Paths";
+			try(Transaction tx = graphService.beginTx()){
+				executionResult = engine.execute(qry);
+				for(Map<String,Object>row :executionResult){
+					result.add(row.get("PathLength").toString(),row.get("Paths").toString());
+				}
+				tx.success();
+			}
+		}catch(NumberFormatException e){
+			LOGGER.error("Exception while querying",e);
+			throw e;
+		}catch(Exception e){
+			LOGGER.error("Exception while querying",e);
+			throw e;
+		}
+		return result;
+	}
 }
