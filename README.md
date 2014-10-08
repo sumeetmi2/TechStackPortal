@@ -24,3 +24,8 @@ For adding an Employee info:
 
 
 Note: The attributes in the add info page are to be added dynamically. <b>Property Type</b> is the attribute type (eg. project,technology,experience) and <b>Property value</b> is the value corresponding to it.(eg.nitman,java,redshift,3)
+
+
+Access the exposed api for getting the depth wise search using below URL
+<b>http://localhost:8080/TechStackPortal/rest/d/{depth}/q/{queryString}</b>
+
